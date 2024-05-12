@@ -20,15 +20,19 @@ class Photo < ApplicationRecord
   ## Direct associations
 
   # Photo#poster: returns a row from the users table associated to this photo by the owner_id column
-
+  belongs_to(:poster, class_name: "User", foreign_key: "owner_id")
+  belongs_to(:liker, class_name: "Like", foreign_key: "fan_id")
   # Photo#comments: returns rows from the comments table associated to this photo by the photo_id column
-
+  has_many(:comments, class_name: "Comment", foreign_key: "photo_id")
+  has_many(:commenters, through: :comments, source: :commenter)
   # Photo#likes: returns rows from the likes table associated to this photo by the photo_id column
+  has_many(:likes, class_name: "Like", foreign_key: "photo_id")
 
   ## Indirect associations
 
   # Photo#fans: returns rows from the users table associated to this photo through its likes
-
+  has_many(:fans, through: :likes, source: :fan)
+=begin
   def poster
     my_owner_id = self.owner_id
 
@@ -54,7 +58,6 @@ class Photo < ApplicationRecord
 
     return matching_likes
   end
-
   def fans
     my_likes = self.likes
     
@@ -68,6 +71,7 @@ class Photo < ApplicationRecord
 
     return matching_users
   end
+=end 
 
   def fan_list
     my_fans = self.fans
